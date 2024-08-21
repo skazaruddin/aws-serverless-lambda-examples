@@ -1,0 +1,375 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "description": "Employees API",
+    "title": "Employees"
+  },
+  "schemes": [
+    "https"
+  ],
+  "paths": {
+    "/": {
+      "get": {
+        "tags": [
+          "employees"
+        ],
+        "description": "Employees API HTML web page containing API usage information",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "text/html"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "headers": {
+              "Content-Type": {
+                "type": "string",
+                "description": "Media type of request"
+              }
+            }
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "responses": {
+            "default": {
+              "statusCode": "200",
+              "responseParameters": {
+                "method.response.header.Content-Type": "'text/html'"
+              },
+              "responseTemplates": {
+                "text/html": "<html>...</html>"
+              }
+            }
+          },
+          "passthroughBehavior": "when_no_match",
+          "requestTemplates": {
+            "application/json": "{\"statusCode\": 200}"
+          },
+          "type": "mock"
+        }
+      }
+    },
+    "/employees": {
+      "get": {
+        "tags": [
+          "employees"
+        ],
+        "summary": "List all employees",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "department",
+            "in": "query",
+            "description": "Department to filter employees by",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Page number of results to return.",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "$ref": "#/definitions/Employees"
+            },
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string",
+                "description": "URI that may access the resource"
+              }
+            }
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "responses": {
+            "default": {
+              "statusCode": "200",
+              "responseParameters": {
+                "method.response.header.Access-Control-Allow-Origin": "'*'"
+              }
+            }
+          },
+          "requestTemplates": {
+            "application/json": "{\"department\": \"$input.params('department')\", \"page\": \"$input.params('page')\"}"
+          },
+          "uri": "arn:aws:apigateway:REGION:ACCOUNT_ID:function:FUNCTION_NAME",
+          "passthroughBehavior": "when_no_match",
+          "httpMethod": "GET",
+          "type": "lambda"
+        }
+      },
+      "post": {
+        "tags": [
+          "employees"
+        ],
+        "operationId": "CreateEmployee",
+        "summary": "Create a new employee",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "NewEmployee",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/NewEmployee"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "$ref": "#/definitions/NewEmployeeResponse"
+            },
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string",
+                "description": "URI that may access the resource"
+              }
+            }
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "responses": {
+            "default": {
+              "statusCode": "200",
+              "responseParameters": {
+                "method.response.header.Access-Control-Allow-Origin": "'*'"
+              }
+            }
+          },
+          "requestTemplates": {
+            "application/json": "{\"employee\": $input.body}"
+          },
+          "uri": "arn:aws:apigateway:REGION:ACCOUNT_ID:function:FUNCTION_NAME",
+          "passthroughBehavior": "when_no_match",
+          "httpMethod": "POST",
+          "type": "lambda"
+        }
+      },
+      "options": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "$ref": "#/definitions/Empty"
+            },
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string",
+                "description": "URI that may access the resource"
+              },
+              "Access-Control-Allow-Methods": {
+                "type": "string",
+                "description": "Method or methods allowed when accessing the resource"
+              },
+              "Access-Control-Allow-Headers": {
+                "type": "string",
+                "description": "Used in response to a preflight request to indicate which HTTP headers can be used when making the request."
+              }
+            }
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "responses": {
+            "default": {
+              "statusCode": "200",
+              "responseParameters": {
+                "method.response.header.Access-Control-Allow-Methods": "'POST,GET,OPTIONS'",
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'",
+                "method.response.header.Access-Control-Allow-Origin": "'*'"
+              }
+            }
+          },
+          "passthroughBehavior": "when_no_match",
+          "requestTemplates": {
+            "application/json": "{\"statusCode\": 200}"
+          },
+          "type": "mock"
+        }
+      }
+    },
+    "/employees/{employeeId}": {
+      "get": {
+        "tags": [
+          "employees"
+        ],
+        "summary": "Get an employee by ID",
+        "operationId": "GetEmployee",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "employeeId",
+            "in": "path",
+            "description": "The ID of the employee to retrieve",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "$ref": "#/definitions/Employee"
+            },
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string",
+                "description": "URI that may access the resource"
+              }
+            }
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "responses": {
+            "default": {
+              "statusCode": "200",
+              "responseParameters": {
+                "method.response.header.Access-Control-Allow-Origin": "'*'"
+              }
+            }
+          },
+          "requestTemplates": {
+            "application/json": "{\"employeeId\": \"$input.params('employeeId')\"}"
+          },
+          "uri": "arn:aws:apigateway:REGION:ACCOUNT_ID:function:FUNCTION_NAME",
+          "passthroughBehavior": "when_no_match",
+          "httpMethod": "GET",
+          "type": "lambda"
+        }
+      },
+      "options": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "employeeId",
+            "in": "path",
+            "description": "The ID of the employee to retrieve",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "schema": {
+              "$ref": "#/definitions/Empty"
+            },
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string",
+                "description": "URI that may access the resource"
+              },
+              "Access-Control-Allow-Methods": {
+                "type": "string",
+                "description": "Method or methods allowed when accessing the resource"
+              },
+              "Access-Control-Allow-Headers": {
+                "type": "string",
+                "description": "Used in response to a preflight request to indicate which HTTP headers can be used when making the request."
+              }
+            }
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "responses": {
+            "default": {
+              "statusCode": "200",
+              "responseParameters": {
+                "method.response.header.Access-Control-Allow-Methods": "'GET,OPTIONS'",
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'",
+                "method.response.header.Access-Control-Allow-Origin": "'*'"
+              }
+            }
+          },
+          "passthroughBehavior": "when_no_match",
+          "requestTemplates": {
+            "application/json": "{\"statusCode\": 200}"
+          },
+          "type": "mock"
+        }
+      }
+    }
+  },
+  "definitions": {
+    "Employees": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/Employee"
+      }
+    },
+    "Empty": {
+      "type": "object"
+    },
+    "NewEmployeeResponse": {
+      "type": "object",
+      "properties": {
+        "employee": {
+          "$ref": "$/definitions/Employee"
+        }
+      }
+    },
+    "Employee": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Employee ID"
+        },
+        "name": {
+          "type": "string",
+          "description": "Employee name"
+        },
+        "department": {
+          "type": "string",
+          "description": "Employee department"
+        }
+      }
+    },
+    "NewEmployee": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Employee name"
+        },
+        "department": {
+          "type": "string",
+          "description": "Employee department"
+        }
+      },
+      "required": [
+        "name",
+        "department"
+      ]
+    }
+  }
+}
